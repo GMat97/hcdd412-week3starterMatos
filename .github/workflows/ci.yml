@@ -1,0 +1,43 @@
+# This is the name that will show up in the GitHub Actions tab
+name: CI
+
+# Run this workflow whenever I push changes to the main branch
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    # GitHub will use an Ubuntu machine to run the workflow
+    runs-on: ubuntu-latest
+
+    steps:
+      # Get the files from my repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Set up Node.js so the project can run
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # Install the dependencies listed in package-lock.json
+      - name: Install dependencies
+        run: npm ci
+
+      # Run the tests to make sure everything is working
+      - name: Run tests
+        run: npm test
+
+      # Build the project and create the dist folder
+      - name: Build project
+        run: npm run build
+
+      # Save the dist folder so I can access the finished build
+      - name: Archive build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
